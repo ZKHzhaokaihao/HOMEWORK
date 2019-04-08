@@ -1,44 +1,71 @@
 #include<stdio.h>
-#include<stdlib.h>
-typedef struct LNode
+#define maxlen 100
+struct node{
+   int data[maxlen];
+   int top;
+}s;
+
+int n;
+
+void initstack()
 {
-    int data;
-    int order;
-    struct LNode*next;
-}LNode;
-int main()
+    s.top=-1;
+}
+
+void push(int q)
 {
-    struct LNode *pa,*pb,*head;
-    head=(struct LNode*)malloc(sizeof(LNode));
-    pa=head;
-    int i,m,n;
-    printf("输入人数n和上限m\n");
-    scanf("%d %d",&n,&m);
-    for(i=1;i<=n;i++)
+    s.top++;
+    s.data[s.top]=q;
+}
+
+int pop()
+{
+    int t;
+    t=s.data[s.top];
+    s.top--;
+    return t;
+}
+
+int ifempty()
+{
+    if(s.top==-1)
+        return 1;
+    else
+        return 0;
+}
+
+void process(int pos,int path[],int curp)
+{
+    int m,i;
+    if(pos<n)
     {
-        int k=0;
-        printf("请依次输入每个人的密码\n");
-        scanf("%d",&k);
-        pa->next=(struct LNode*)malloc(sizeof(LNode));
-        pa=pa->next;
-        pa->data=k;
-        pa->order=i;
+        push(pos+1);
+        process(pos+1,path,curp);
+        pop();
     }
-    pa->next=head->next;
-    pa=head->next;
-    free(head);
-    while(pa->next!=pa)
+    if(!ifempty())
     {
-        for(i=1;i<m;i++)
-        {
-            pb=pa;
-            pa=pa->next;
-        }
-        printf("%d->",pa->order);
-        m=pa->data;
-        pb->next=pa->next;
-        free(pa);
-        pa=pb->next;
+        m=pop();
+        path[curp]=m;
+        curp++;
+        process(pos,path,curp);
+        push(m);
     }
-    printf("%d\n",pa->order);
+    if(pos==n&&ifempty())
+    {
+        for(i=0;i<curp;i++)
+            printf("%2d",path[i]);
+        printf("\n");
+    }
+}
+
+void main()
+{
+    int path[maxlen];
+    printf("请输入车厢数:");
+    scanf("%d",&n);
+    initstack();
+    push(1);
+    printf("所有输出序列:\n");
+    process(1,path,0);
 }
